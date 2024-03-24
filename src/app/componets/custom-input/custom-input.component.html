@@ -1,0 +1,23 @@
+<div *ngIf="fieldType === 'date' ; else inputField">
+       <mat-form-field>
+              <input matInput [matDatepicker]="picker" [(ngModel)]="input" (ngModelChange)="onChange($event)"
+                     (blur)="onTouch()" [placeholder]="input">
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+       </mat-form-field>
+       <div *ngIf="inputControl.errors">
+              <mat-error *ngIf="inputControl.errors['required']">Value Is Required</mat-error>
+       </div>
+</div>
+
+<ng-template #inputField>
+       <mat-form-field class="example-full-width">
+              <input matInput [type]="fieldType" [(ngModel)]="input" (ngModelChange)="onChange($event)"
+                     (blur)="onTouch()">
+              <mat-error *ngIf="inputControl.invalid">{{errorMessage}}</mat-error>
+       </mat-form-field>
+       <div *ngIf="inputControl.errors">
+              <mat-error *ngIf="inputControl.errors['required']">Value Is Required</mat-error>
+              <mat-error *ngIf="inputControl.errors['invalidEmail']">{{errorMessage}}</mat-error> 
+       </div>
+</ng-template>

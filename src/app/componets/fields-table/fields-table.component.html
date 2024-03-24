@@ -1,0 +1,103 @@
+
+    <section class="container py-3" *ngIf="fieldsList.length">
+        <div class="d-flex py-3 align-content-center align-items-center">
+            <h3>Selected Fields: </h3>
+            <div class="d-flex flex-row w-50 justify-content-around">
+                <div  class="selected-field" *ngFor="let field of selectedFields" >
+                    {{field.name}}
+                </div>
+            </div>
+        </div>
+        <form [formGroup]="tableForm" (ngSubmit)="saveChanges()">
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Select</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                   <ng-template ngFor let-row [ngForOf]="fieldsList" let-i="index" formArrayName="selectedFields" >
+                    <tr [formGroupName]="i">
+                        <th scope="row">
+                            <mat-checkbox (click)="$event.stopPropagation()" (change)="rowSelected($event,row,i)"
+                                [checked]="row.isChecked">
+                            </mat-checkbox>
+                        </th>
+                        <td *ngIf="!row.isChecked">{{row.name}}</td>
+                        <td *ngIf="row.isChecked">
+                            <mat-form-field class="example-full-width">
+                                <input matInput type="text" formControlName="name">
+                            </mat-form-field>
+                            <div *ngIf="rows.at(i).get('name')?.errors">
+                                <mat-error *ngIf="rows.at(i).get('name')?.hasError('required')">Name Is Required</mat-error> 
+                         </div>
+                        </td>
+                        <td *ngIf="!row.isChecked" [ngStyle]="{'color': row.color}">{{row.type}}</td>
+                        <td *ngIf="row.isChecked">
+                            <mat-form-field>
+                                <mat-select formControlName="type" (selectionChange)="onChange($event,row)">
+                                  <mat-option value="date">date</mat-option>
+                                  <mat-option value="email">email</mat-option>
+                                  <mat-option value="number">number</mat-option>
+                                  <mat-option value="text">text</mat-option>
+                                </mat-select>
+                              </mat-form-field>
+                        </td>
+                        <td *ngIf="!row.isChecked">
+                            {{row.value}}
+                        </td>
+                        <td *ngIf="row.isChecked">
+                          <app-custom-input formControlName="value" [fieldType]="row.type"></app-custom-input>
+                        </td>
+                    </tr>
+                </ng-template>
+                </tbody>
+            </table>
+           <div class="d-flex justify-content-end">
+            <button mat-raised-button color="primary" type="submit" [disabled]="tableForm.invalid">Save Changes</button>
+           </div>
+        </form>
+    </section>
+
+    <div *ngIf="changesSubmitted" class="container py-3 d-flex justify-content-between">
+       <div *ngIf="selectedFields.length">
+        <h3>Fields with it's value</h3>
+        <table class="table">
+            <tbody>
+              <tr *ngFor="let field of selectedFields">
+                <td>{{field.name}}</td>
+                <td [ngStyle]="{'color': field.color}">{{field.value}}</td>
+              </tr>
+            </tbody>
+          </table>
+       </div>
+       <div *ngIf="fieldTypeCountsArray.length">
+        <h3>Fields Types with it's count</h3>
+        <table class="table">
+            <tbody>
+              <tr *ngFor="let field of fieldTypeCountsArray">
+                <td>{{field.type}}</td>
+                <td>{{field.count}}</td>
+              </tr>
+            </tbody>
+          </table>
+       </div>
+    </div>
+
+    <div *ngIf="removedFields.length || addedFields.length" class="container py-3 d-flex justify-content-between">
+      <div *ngIf="addedFields.length">
+        <h3>Added fields</h3>
+        <div *ngFor="let field of addedFields">
+            {{field.name}}
+        </div>
+      </div>
+      <div *ngIf="removedFields.length">
+        <h3>removed fields</h3>
+        <div *ngFor="let field of removedFields">
+            {{field.name}}
+        </div>
+      </div>
+    </div>
